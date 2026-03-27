@@ -114,7 +114,7 @@ class ServoTimerHandler{
 
     void writeMicroseconds(int index, int value){
       if (servos[index]!=nullptr){
-        servos[index]->position_tick = value/servo_timer_base_us_tick;
+        servos[index]->position_tick = static_cast<uint32_t>(value) >> SERVO_TIMER_BASE_US_TICK_POW;
       }
     }
 
