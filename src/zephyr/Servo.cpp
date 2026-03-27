@@ -11,6 +11,7 @@
 
 typedef struct {
     uint8_t pin;
+    bool status;
     uint32_t position_tick;
     uint32_t timer_index;
     uint32_t min;
@@ -39,7 +40,7 @@ class ServoTimerHandler{
         counter_start(counter_dev);
         struct counter_top_cfg top_cfg;
         top_cfg.ticks = counter_us_to_ticks(counter_dev, servo_timer_base_us_tick);
-        top_cfg.callback = this->servo_timer_update; 
+        top_cfg.callback = this->servo_timer_update;
         top_cfg.user_data = &top_cfg;
         top_cfg.flags = 0;
 
@@ -59,10 +60,16 @@ class ServoTimerHandler{
       for (uint8_t i = 0; i < MAX_ZEPHYR_SERVOS; i++){
         if (servos[i]!=nullptr){
           if (timer_servo>servos[i]->position_tick){
-            digitalWrite(servos[i]->pin, LOW);
+            if (servos[i]->status) {
+              digitalWrite(servos[i]->pin, LOW);
+              servos[i]->status = false;
+            }
           }
           else{
-            digitalWrite(servos[i]->pin, HIGH);
+            if (!servos[i]->status) {
+              digitalWrite(servos[i]->pin, HIGH);
+              servos[i]->status = true;
+            }
           }
         }
       }
