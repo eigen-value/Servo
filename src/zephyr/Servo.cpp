@@ -164,13 +164,16 @@ uint8_t Servo::attach(int pin, int min, int max){
   return 0;
 }
 
-
 void Servo::detach(){
   servo_handle.removeServo(servoIndex);
   servoIndex = 255;
 }
 
 void Servo::write(int value){
+  if (value < 0)
+    value = 0;
+  else if (value > 180)
+    value = 180;
   servo_handle.writeMicroseconds(servoIndex, map(value, 0, 180, servo_handle.getMin(servoIndex), servo_handle.getMax(servoIndex)));
 }
 
